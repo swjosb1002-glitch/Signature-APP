@@ -1,0 +1,17 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+
+# Images (keep repo light)
+images/*
+!images/README.txt
+
+# Misc
+*.log
+coverage/
+.env

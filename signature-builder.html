@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email Signature Builder</title>
+  <style>
+    body { margin:0; font-family: system-ui, -apple-system, Arial; background:#f7f8fb; }
+    .wrap { display:grid; grid-template-columns: 60% 40%; gap:20px; padding:22px; align-items:start; }
+    .panel { background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.06); }
+    .form { padding:16px 16px 12px; }
+    .form h2 { margin:0 0 12px; font-size:18px; }
+    .field { margin-bottom:12px; }
+    .field label { display:block; font-size:12px; color:#444; margin-bottom:6px; }
+    .field input[type="text"], .field input[type="url"], .field textarea { width:100%; padding:8px 10px; border:1px solid #d7dbe2; border-radius:8px; font-size:14px; }
+    .field textarea { min-height:84px; resize:vertical; }
+    .row { display:flex; gap:10px; }
+    .buttons { display:flex; gap:8px; margin-top:8px; }
+    button { background:#0a84ff; color:#fff; border:none; padding:9px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+    button.secondary { background:#eef2f7; color:#111; }
+    .hint { font-size:12px; color:#666; }
+
+    .preview-pad { padding:18px; }
+    .preview-title { font-size:16px; margin:0 0 8px; }
+    .preview { background:#fff; border:1px solid #e3e6ec; border-radius:10px; padding:18px; }
+
+    /* Signature block wrapper for preview */
+    .sig-wrap { max-width: 720px; }
+
+    /* Form panel improvements */
+    .form { padding:18px 18px 14px; }
+    .form h2 { font-size:18px; margin:0 0 8px; }
+    .group-title { font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:#2a2a2a; margin:14px 0 8px; padding-bottom:6px; border-bottom:1px solid #e3e6ec; }
+    .divider { height:1px; background:#e9edf3; border:0; margin:12px 0; }
+    .field { background:#fbfcff; border:1px solid #e9edf3; border-radius:10px; padding:10px; }
+    .field input[type="text"], .field input[type="url"], .field textarea { border-color:#dfe4ea; }
+    .field input[type="text"]:focus, .field input[type="url"]:focus, .field textarea:focus { outline:none; border-color:#0a84ff; box-shadow:0 0 0 3px rgba(10,132,255,0.15); }
+    .row { display:flex; gap:12px; }
+    .buttons { margin-top:12px; }
+    button:hover { filter:brightness(0.98); }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel form">
+      <h2>Signature Details</h2>
+      <h3 class="group-title">Profile</h3>
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" type="text" placeholder="ANKUR SANTOKI" />
+      </div>
+      <div class="field">
+        <label for="designation">Designation</label>
+        <input id="designation" type="text" placeholder="Lead Frontend Developer" />
+      </div>
+      <div class="field">
+        <label for="photoUrl">Profile photo URL (from /images)</label>
+        <input id="photoUrl" type="text" placeholder="/images/profile.jpg" />
+        <div class="hint">Place your image in the project's images folder and reference it, e.g., /images/your-photo.jpg.</div>
+        <div class="row" style="margin-top:8px; align-items:center; gap:8px;">
+          <input id="photoFile" type="file" accept="image/*" style="flex:1" />
+          <button id="openEditor" type="button" class="secondary">Edit photo</button>
+          <button id="uploadPhoto" type="button">Upload photo to /images</button>
+        </div>
+        <div class="hint">Upload saves to /images (cropped square) and fills the URL above.</div>
+      </div>
+      <div class="divider"></div>
+      <h3 class="group-title">Company</h3>
+      <div class="field">
+        <label for="logo">Company Logo</label>
+        <input id="logo" type="url" value="https://www.e2msolutions.com/images/logo.png" readonly />
+        <div class="hint">Fixed logo URL applied to all signatures.</div>
+      </div>
+      <div class="field">
+        <label for="address">Company Address</label>
+        <textarea id="address" placeholder="A Block, 1401-1406, and 1413,
+Navratna Corporate Park Iscon,
+Bopal Rd, Ambli,
+Ahmedabad 380058,
+Gujarat, India"></textarea>
+        <div class="hint"><label><input id="useAddressPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+      </div>
+      <div class="divider"></div>
+      <h3 class="group-title">Contact</h3>
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label for="phone">Phone</label>
+          <input id="phone" type="text" placeholder="(+91) 97-26265550" />
+        </div>
+        <div class="field" style="flex:1">
+          <label for="website">Website</label>
+          <input id="website" type="url" placeholder="https://www.e2msolutions.com/" />
+        </div>
+      </div>
+      <div class="divider"></div>
+      <h3 class="group-title">Links</h3>
+      <div class="field">
+        <label for="calendar">Schedule a meeting link</label>
+        <input id="calendar" type="url" placeholder="https://cal.com/yourhandle" />
+      </div>
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label for="copyright">Copyright Text</label>
+          <input id="copyright" type="text" placeholder="Copyright © 2025 E2M. All Rights Reserved." />
+          <div class="hint"><label><input id="useCopyrightPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="disclaimer">Confidentiality Notice</label>
+        <textarea id="disclaimer" placeholder="CONFIDENTIALITY NOTICE: This email is for the use of the intended recipient(s) only.
+If you have received this email in error, please notify me immediately and then delete it."></textarea>
+        <div class="hint"><label><input id="useDisclaimerPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+      </div>
+      <div class="divider"></div>
+      <div class="buttons">
+        <button id="fillSample" class="secondary" type="button">Fill sample</button>
+        <button id="copyHtml" type="button">Copy HTML</button>
+        <button id="downloadHtml" type="button" class="secondary">Download HTML</button>
+      </div>
+      <div class="hint" style="margin-top:6px;">Generated HTML uses tables and inline styles for email clients.</div>
+    </div>
+
+    <div class="panel preview-pad">
+      <h3 class="preview-title">Live Preview</h3>
+      <div id="preview" class="preview">
+        <div class="sig-wrap" id="sigWrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Editor Modal -->
+  <div id="imageEditorModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:9999;">
+    <div style="background:#fff;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);padding:12px;max-width:820px;width:92%;">
+      <div style="display:flex;gap:12px;">
+        <div style="flex:1;min-height:360px;max-height:520px;overflow:hidden;">
+          <img id="editorImage" style="max-width:100%;display:block;" alt="Editor" />
+        </div>
+        <div style="width:220px;display:flex;flex-direction:column;gap:8px;">
+          <button id="editZoomIn" type="button">Zoom In</button>
+          <button id="editZoomOut" type="button" class="secondary">Zoom Out</button>
+          <button id="editRotateLeft" type="button" class="secondary">Rotate Left</button>
+          <button id="editRotateRight" type="button" class="secondary">Rotate Right</button>
+          <button id="editReset" type="button" class="secondary">Reset</button>
+          <div class="hint">Aspect ratio locked to square.</div>
+          <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end;">
+            <button id="editCancel" type="button" class="secondary">Cancel</button>
+            <button id="editSave" type="button">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <script>
+    const el = (id) => document.getElementById(id);
+    const state = {};
+    const LOGO_URL = 'https://www.e2msolutions.com/images/logo.png';
+    const DEFAULT_PHOTO_SIZE = 132; // preview avatar size
+    const EDIT_TARGET_SIZE = 400; // edited/uploaded image target size
+
+    function toHtml() {
+      const name = el('name').value.trim();
+      const designation = el('designation').value.trim();
+
+      const useAddressPlaceholder = el('useAddressPlaceholder')?.checked;
+      const useCopyrightPlaceholder = el('useCopyrightPlaceholder')?.checked;
+      const useDisclaimerPlaceholder = el('useDisclaimerPlaceholder')?.checked;
+
+      const address = (useAddressPlaceholder ? el('address').placeholder : el('address').value.trim());
+      const phone = el('phone').value.trim();
+      const website = el('website').value.trim();
+      const calendar = el('calendar').value.trim();
+      const copyright = (useCopyrightPlaceholder ? el('copyright').placeholder : el('copyright').value.trim());
+      const disclaimer = (useDisclaimerPlaceholder ? el('disclaimer').placeholder : el('disclaimer').value.trim());
+
+      const photoUrl = el('photoUrl').value.trim();
+      const size = DEFAULT_PHOTO_SIZE;
+      const photoImg = photoUrl ? `<img style="display:block;height:${size}px;width:${size}px;margin:auto;" src="${photoUrl}" width="${size}" height="${size}" alt="Profile" />` : '';
+      const logoImg = `<img style="display:block;height:40px;width:auto;margin:0;margin-bottom:20px" src="${LOGO_URL}" alt="Company Logo" />`;
+
+      // Build email-safe (table + inline styles) signature HTML
+      return `
+<table style="float:none;max-width:580px;min-width:580px;padding:12px 20px;font-family:Calibri, Arial;" width="580" cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr>
+      <td style="border-bottom:1px solid #d4d4d4;padding-bottom:15px;">
+        <table style="max-width:540px;min-width:540px;" cellspacing="0" cellpadding="0">
+          <tbody>
+            <tr>
+              <td style="padding-right:20px;border-right:1px solid #d4d4d4;text-align:center;" width="230" valign="middle">
+                <table style="font-size:14px;color:#000;margin-bottom:0;font-family:Calibri, Arial;min-width:230px;" cellspacing="0" cellpadding="0">
+                  <tbody>
+                    <tr>
+                      <td>${photoImg}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding-top:10px;text-align:center;">
+                        ${name ? `<h2 style="font-size:20px;line-height:26px;font-weight:900;margin:0;font-family:Calibri, Arial;">${name}</h2>` : ''}
+                        ${designation ? `<p style="font-size:14px;color:#4e8db4;margin-top:5px;font-weight:900;margin-bottom:10px;font-family:Calibri, Arial;">${designation}</p>` : ''}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td style="padding-left:20px;" width="350" align="left">
+                ${logoImg}
+                ${address ? `<p style="font-size:14px;color:#000;margin-top:6px;margin-bottom:10px;font-family:Calibri, Arial;white-space:pre-line;">${address}</p>` : ''}
+                ${phone ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:Calibri, Arial;">Phone: ${phone}</p>` : ''}
+                ${website ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:Calibri, Arial;">Web: <a style="text-decoration:none;color:#4e8db4;" href="${website}">${website.replace(/^https?:\/\/(www\.)?/, '')}</a></p>` : ''}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:15px 0px">
+        <table cellspacing="0" cellpadding="0" style="width:100%">
+          <tbody>
+            <tr>
+              <td style="padding-top:12px;">
+                ${calendar ? `<p style="font-size:14px;line-height:20px;color:#000;margin:0 0 8px;text-align:center;font-family:Calibri, Arial;"><strong>Schedule a meeting :</strong> <a style="text-decoration:none;color:#4e8db4;" href="${calendar}">${calendar}</a></p>` : ''}
+                ${disclaimer ? `<p style="font-size:12px;line-height:18px;color:#5b5b5b;margin:0;text-align:center;font-family:Calibri, Arial;">${disclaimer.replace(/\n/g,'<br>')}</p>` : ''}
+                ${copyright ? `<p style="font-size:12px;line-height:18px;color:#5b5b5b;margin:6px 0 0;text-align:center;font-family:Calibri, Arial;">${copyright}</p>` : ''}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>`;
+    }
+
+    function render() {
+      el('sigWrap').innerHTML = toHtml();
+    }
+
+    // Wire inputs
+    ['name','designation','address','phone','website','calendar','copyright','disclaimer','photoUrl']
+      .forEach(id => el(id).addEventListener('input', render));
+
+    ['useAddressPlaceholder','useCopyrightPlaceholder','useDisclaimerPlaceholder']
+      .forEach(id => el(id).addEventListener('change', render));
+
+    // Upload photo to /images and set the URL field
+    el('uploadPhoto').addEventListener('click', async () => {
+      const fileInput = el('photoFile');
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) { alert('Please choose an image to upload.'); return; }
+      const form = new FormData();
+      form.append('photo', file);
+      form.append('size', String(EDIT_TARGET_SIZE));
+      try {
+        const res = await fetch('/upload-photo', { method: 'POST', body: form });
+        const data = await res.json();
+        if (!res.ok) { throw new Error(data?.error || 'Upload failed'); }
+        el('photoUrl').value = data.url;
+        render();
+        alert(`Photo uploaded successfully. URL: ${data.url}`);
+      } catch (e) {
+        alert('Upload error: ' + (e.message || e));
+      }
+    });
+
+    el('logo').addEventListener('change', () => {});
+
+    // Actions
+    el('copyHtml').addEventListener('click', async () => {
+      const html = toHtml();
+      try {
+        await navigator.clipboard.writeText(html);
+        alert('Signature HTML copied to clipboard');
+      } catch {
+        alert('Clipboard copy failed. Try download instead.');
+      }
+    });
+
+    el('downloadHtml').addEventListener('click', () => {
+      const blob = new Blob([toHtml()], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'email-signature.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    el('fillSample').addEventListener('click', () => {
+      el('name').value = 'ANKUR SANTOKI';
+      el('designation').value = 'Lead Frontend Developer';
+      el('address').value = 'A Block, 1401-1406, and 1413,\nNavratna Corporate Park Iscon,\nBopal Rd, Ambli,\nAhmedabad 380058,\nGujarat, India';
+      el('phone').value = '(+91) 97-26265550';
+      el('website').value = 'https://www.e2msolutions.com/';
+      el('calendar').value = 'https://cal.com/ankur';
+      el('photoUrl').value = '/images/profile.jpg';
+      el('copyright').value = 'Copyright © 2025 E2M. All Rights Reserved.';
+      el('disclaimer').value = 'CONFIDENTIALITY NOTICE: This email is for the use of the intended recipient(s) only.\nIf you have received this email in error, please notify me immediately and then delete it.';
+      render();
+    });
+
+    // Initial
+    render();
+
+    // Image Editor (Cropper.js) integration
+    let cropperInstance = null;
+    let currentObjectUrl = null;
+
+    function openEditorWithBlob(blob) {
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+        currentObjectUrl = null;
+      }
+      currentObjectUrl = URL.createObjectURL(blob);
+      const img = el('editorImage');
+      img.src = currentObjectUrl;
+      const modal = el('imageEditorModal');
+      modal.style.display = 'flex';
+      // Destroy any previous instance
+      if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+      }
+      cropperInstance = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 1,
+        background: false,
+        checkOrientation: true,
+      });
+    }
+
+    function closeEditor() {
+      const modal = el('imageEditorModal');
+      modal.style.display = 'none';
+      if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+      }
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+        currentObjectUrl = null;
+      }
+    }
+
+    async function fetchUrlToBlob(url) {
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('Failed to fetch image');
+      return await res.blob();
+    }
+
+    // Open editor button: prefer selected file; fallback to current URL, otherwise prompt file picker
+    el('openEditor').addEventListener('click', async () => {
+      const fileInput = el('photoFile');
+      try {
+        // If a file is already selected, open editor immediately
+        if (fileInput.files && fileInput.files[0]) {
+          openEditorWithBlob(fileInput.files[0]);
+          return;
+        }
+        // Try current URL if present
+        const url = el('photoUrl') ? el('photoUrl').value : '';
+        if (url) {
+          try {
+            const blob = await fetchUrlToBlob(url);
+            openEditorWithBlob(blob);
+            return;
+          } catch (fetchErr) {
+            // Fall through to prompt for local file
+          }
+        }
+        // Prompt user to pick a file; open editor after selection
+        fileInput.click();
+        const picked = await new Promise((resolve) => {
+          const handler = () => { fileInput.removeEventListener('change', handler); resolve(fileInput.files && fileInput.files[0]); };
+          fileInput.addEventListener('change', handler, { once: true });
+        });
+        if (picked) {
+          openEditorWithBlob(picked);
+          return;
+        }
+        alert('Please choose a photo file or set a working Photo URL.');
+      } catch (e) {
+        alert('Unable to open editor: ' + (e?.message || e));
+      }
+    });
+
+    // Editor controls
+    el('editZoomIn').addEventListener('click', () => cropperInstance && cropperInstance.zoom(0.1));
+    el('editZoomOut').addEventListener('click', () => cropperInstance && cropperInstance.zoom(-0.1));
+    el('editRotateLeft').addEventListener('click', () => cropperInstance && cropperInstance.rotate(-15));
+    el('editRotateRight').addEventListener('click', () => cropperInstance && cropperInstance.rotate(15));
+    el('editReset').addEventListener('click', () => cropperInstance && cropperInstance.reset());
+    el('editCancel').addEventListener('click', () => closeEditor());
+
+    // Save edited image: crop to selected size then upload to server
+    el('editSave').addEventListener('click', async () => {
+      try {
+        if (!cropperInstance) return;
+        const size = EDIT_TARGET_SIZE;
+        const canvas = cropperInstance.getCroppedCanvas({ width: size, height: size });
+        if (!canvas) throw new Error('Failed to render canvas');
+
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('Failed to create image blob');
+
+        const formData = new FormData();
+        formData.append('photo', blob, 'edited.png');
+        formData.append('size', String(size));
+
+        const resp = await fetch('/upload-photo', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!resp.ok) {
+          const errText = await resp.text();
+          throw new Error(errText || 'Upload failed');
+        }
+
+        const data = await resp.json();
+        el('photoUrl').value = data.url;
+        render();
+        closeEditor();
+        alert(`Edited image saved. URL: ${data.url}`);
+      } catch (e) {
+        alert('Save failed: ' + (e?.message || e));
+      }
+    });
+  </script>
+</body>
+</html>
