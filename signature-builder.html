@@ -8,15 +8,14 @@
     body { margin:0; font-family: system-ui, -apple-system, Arial; background:#f7f8fb; }
     .wrap { display:grid; grid-template-columns: 60% 40%; gap:20px; padding:22px; align-items:start; }
     .panel { background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.06); }
-    .form { padding:16px 16px 12px; }
-    .form h2 { margin:0 0 12px; font-size:18px; }
+    .form { padding:18px; }
     .field { margin-bottom:12px; }
     .field label { display:block; font-size:12px; color:#444; margin-bottom:6px; }
-    .field input[type="text"], .field input[type="url"], .field textarea { width:100%; padding:8px 10px; border:1px solid #d7dbe2; border-radius:8px; font-size:14px; }
-    .field textarea { min-height:84px; resize:vertical; }
-    .row { display:flex; gap:10px; }
+    .field input[type="text"], .field input[type="url"], .field textarea { width:100%; padding:10px 12px; border:1px solid #d7dbe2; border-radius:10px; font-size:14px; background:#fff; }
+    .field textarea { min-height:100px; resize:vertical; }
+    .row { display:flex; gap:12px; }
     .buttons { display:flex; gap:8px; margin-top:8px; }
-    button { background:#0a84ff; color:#fff; border:none; padding:9px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+    button { background:#0a84ff; color:#fff; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; }
     button.secondary { background:#eef2f7; color:#111; }
     .hint { font-size:12px; color:#666; }
 
@@ -24,95 +23,127 @@
     .preview-title { font-size:16px; margin:0 0 8px; }
     .preview { background:#fff; border:1px solid #e3e6ec; border-radius:10px; padding:18px; }
 
-    /* Signature block wrapper for preview */
     .sig-wrap { max-width: 720px; }
 
-    /* Form panel improvements */
-    .form { padding:18px 18px 14px; }
-    .form h2 { font-size:18px; margin:0 0 8px; }
-    .group-title { font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:#2a2a2a; margin:14px 0 8px; padding-bottom:6px; border-bottom:1px solid #e3e6ec; }
+    .card { border:1px solid #e5eaf3; border-radius:12px; overflow:hidden; margin-bottom:16px; background:#fff; }
+    .card-header { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f4f7fc; border-bottom:1px solid #e5eaf3; }
+    .card-title { margin:0; font-size:15px; font-weight:700; color:#1f2937; }
+    .card-body { padding:14px; }
+
     .divider { height:1px; background:#e9edf3; border:0; margin:12px 0; }
     .field { background:#fbfcff; border:1px solid #e9edf3; border-radius:10px; padding:10px; }
     .field input[type="text"], .field input[type="url"], .field textarea { border-color:#dfe4ea; }
     .field input[type="text"]:focus, .field input[type="url"]:focus, .field textarea:focus { outline:none; border-color:#0a84ff; box-shadow:0 0 0 3px rgba(10,132,255,0.15); }
-    .row { display:flex; gap:12px; }
-    .buttons { margin-top:12px; }
     button:hover { filter:brightness(0.98); }
+
+    .icon { width:18px; height:18px; display:inline-block; }
+    .file-trigger { position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; background:#eef2f7; color:#111; cursor:pointer; }
+    .file-trigger input { position:absolute; inset:0; opacity:0; cursor:pointer; }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" />
 </head>
 <body>
   <div class="wrap">
     <div class="panel form">
-      <h2>Signature Details</h2>
-      <h3 class="group-title">Profile</h3>
-      <div class="field">
-        <label for="name">Name</label>
-        <input id="name" type="text" placeholder="ANKUR SANTOKI" />
-      </div>
-      <div class="field">
-        <label for="designation">Designation</label>
-        <input id="designation" type="text" placeholder="Lead Frontend Developer" />
-      </div>
-      <div class="field">
-        <label for="photoUrl">Profile photo URL (from /images)</label>
-        <input id="photoUrl" type="text" placeholder="/images/profile.jpg" />
-        <div class="hint">Place your image in the project's images folder and reference it, e.g., /images/your-photo.jpg.</div>
-        <div class="row" style="margin-top:8px; align-items:center; gap:8px;">
-          <input id="photoFile" type="file" accept="image/*" style="flex:1" />
-          <button id="openEditor" type="button" class="secondary">Edit photo</button>
-          <button id="uploadPhoto" type="button">Upload photo to /images</button>
+      <div class="card">
+        <div class="card-header">
+          <span class="icon">👤</span>
+          <h3 class="card-title">Profile Information</h3>
         </div>
-        <div class="hint">Upload saves to /images (cropped square) and fills the URL above.</div>
+        <div class="card-body">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input id="name" type="text" placeholder="ANKUR SANTOKI" />
+          </div>
+          <div class="field">
+            <label for="designation">Job Title</label>
+            <input id="designation" type="text" placeholder="Lead Frontend Developer" />
+          </div>
+          <div class="field">
+            <label for="photoUrl">Profile Photo</label>
+            <input id="photoUrl" type="text" placeholder="/images/your-photo.jpg" />
+            <div class="hint">Place your image in the project's images folder and reference it</div>
+            <div class="row" style="margin-top:8px; align-items:center;">
+              <label class="file-trigger">
+                <span>Choose file</span>
+                <input id="photoFile" type="file" accept="image/*" />
+              </label>
+              <button id="openEditor" type="button" class="secondary">Edit photo</button>
+              <button id="uploadPhoto" type="button">Upload to /images</button>
+            </div>
+            <div class="hint">Upload saves to /images and fills the URL above</div>
+          </div>
+        </div>
       </div>
-      <div class="divider"></div>
-      <h3 class="group-title">Company</h3>
-      <div class="field">
-        <label for="logo">Company Logo</label>
-        <input id="logo" type="url" value="https://www.e2msolutions.com/images/logo.png" readonly />
-        <div class="hint">Fixed logo URL applied to all signatures.</div>
-      </div>
-      <div class="field">
-        <label for="address">Company Address</label>
-        <textarea id="address" placeholder="A Block, 1401-1406, and 1413,
+
+      <div class="card">
+        <div class="card-header">
+          <span class="icon">🏢</span>
+          <h3 class="card-title">Company Details</h3>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="logo">Company Logo URL</label>
+            <input id="logo" type="url" value="https://www.e2msolutions.com/images/logo.png" readonly />
+            <div class="hint">Logo URL applied to all signatures</div>
+          </div>
+          <div class="field">
+            <label for="address">Company Address</label>
+            <textarea id="address" placeholder="A Block, 1401-1406, and 1413,
 Navratna Corporate Park Iscon,
 Bopal Rd, Ambli,
 Ahmedabad 380058,
 Gujarat, India"></textarea>
-        <div class="hint"><label><input id="useAddressPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
-      </div>
-      <div class="divider"></div>
-      <h3 class="group-title">Contact</h3>
-      <div class="row">
-        <div class="field" style="flex:1">
-          <label for="phone">Phone</label>
-          <input id="phone" type="text" placeholder="(+91) 97-26265550" />
-        </div>
-        <div class="field" style="flex:1">
-          <label for="website">Website</label>
-          <input id="website" type="url" placeholder="https://www.e2msolutions.com/" />
+            <div class="hint"><label><input id="useAddressPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+          </div>
         </div>
       </div>
-      <div class="divider"></div>
-      <h3 class="group-title">Links</h3>
-      <div class="field">
-        <label for="calendar">Schedule a meeting link</label>
-        <input id="calendar" type="url" placeholder="https://cal.com/yourhandle" />
-      </div>
-      <div class="row">
-        <div class="field" style="flex:1">
-          <label for="copyright">Copyright Text</label>
-          <input id="copyright" type="text" placeholder="Copyright © 2025 E2M. All Rights Reserved." />
-          <div class="hint"><label><input id="useCopyrightPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="icon">☎️</span>
+          <h3 class="card-title">Contact Information</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="field" style="flex:1">
+              <label for="phone">Phone</label>
+              <input id="phone" type="text" placeholder="(+91) 97-26265550" />
+            </div>
+            <div class="field" style="flex:1">
+              <label for="website">Website</label>
+              <input id="website" type="url" placeholder="https://www.e2msolutions.com/" />
+            </div>
+          </div>
         </div>
       </div>
-      <div class="field">
-        <label for="disclaimer">Confidentiality Notice</label>
-        <textarea id="disclaimer" placeholder="CONFIDENTIALITY NOTICE: This email is for the use of the intended recipient(s) only.
+
+      <div class="card">
+        <div class="card-header">
+          <span class="icon">🔗</span>
+          <h3 class="card-title">Links & Legal</h3>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="calendar">Schedule a meeting link</label>
+            <input id="calendar" type="url" placeholder="https://cal.com/yourhandle" />
+          </div>
+          <div class="row">
+            <div class="field" style="flex:1">
+              <label for="copyright">Copyright Text</label>
+              <input id="copyright" type="text" placeholder="Copyright © 2025 E2M. All Rights Reserved." />
+              <div class="hint"><label><input id="useCopyrightPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="disclaimer">Confidentiality Notice</label>
+            <textarea id="disclaimer" placeholder="CONFIDENTIALITY NOTICE: This email is for the use of the intended recipient(s) only.
 If you have received this email in error, please notify me immediately and then delete it."></textarea>
-        <div class="hint"><label><input id="useDisclaimerPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+            <div class="hint"><label><input id="useDisclaimerPlaceholder" type="checkbox" /> Use placeholder in output</label></div>
+          </div>
+        </div>
       </div>
-      <div class="divider"></div>
+
       <div class="buttons">
         <button id="fillSample" class="secondary" type="button">Fill sample</button>
         <button id="copyHtml" type="button">Copy HTML</button>
