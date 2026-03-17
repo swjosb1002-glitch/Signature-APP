@@ -45,9 +45,12 @@ app.post('/upload-photo', (req, res) => {
       }
       const size = 400; // enforce fixed edited image size
 
-      const origName = path.basename(req.file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
-      const base = path.basename(origName, path.extname(origName)).slice(0, 40) || 'photo';
-      const filename = `${base}-${Date.now()}.png`;
+      const rawName = (req.body && req.body.name) ? req.body.name.trim() : '';
+      console.log('req.body:', req.body, '| rawName:', rawName);
+      const base = rawName
+        ? rawName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 40)
+        : 'photo';
+      const filename = `${base}.png`;
       const outPath = path.join(imagesDir, filename);
 
       const circleMask = Buffer.from(
