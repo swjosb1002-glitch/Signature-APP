@@ -69,9 +69,9 @@
                 <input id="photoFile" type="file" accept="image/*" />
               </label>
               <button id="openEditor" type="button" class="secondary">Edit photo</button>
-              <button id="uploadPhoto" type="button">Upload to /images</button>
+              <button id="uploadPhoto" type="button">Process photo</button>
             </div>
-            <div class="hint">Upload saves to /images and fills the URL above</div>
+            <div class="hint">Processes the image in-browser (circular crop + border) and embeds it in the signature.</div>
           </div>
         </div>
       </div>
@@ -288,22 +288,43 @@ If you have received this email in error, please notify me immediately and then 
     ['useAddressPlaceholder','useCopyrightPlaceholder','useDisclaimerPlaceholder']
       .forEach(id => el(id).addEventListener('change', render));
 
-    // Upload photo to /images and set the URL field
+    // Process image client-side: circular mask + blue border ring (no server required)
+    async function applyCircleStyle(sourceBitmap) {
+      const size = EDIT_TARGET_SIZE;
+      const strokeWidth = 8;
+      const out = document.createElement('canvas');
+      out.width = size;
+      out.height = size;
+      const ctx = out.getContext('2d');
+      // Draw circular clipped image
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(sourceBitmap, 0, 0, size, size);
+      ctx.restore();
+      // Draw border ring
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - strokeWidth / 2, 0, Math.PI * 2);
+      ctx.strokeStyle = '#39afd7';
+      ctx.lineWidth = strokeWidth;
+      ctx.stroke();
+      return out;
+    }
+
+    // Upload photo: process client-side and set as data URL
     el('uploadPhoto').addEventListener('click', async () => {
       const fileInput = el('photoFile');
       const file = fileInput.files && fileInput.files[0];
       if (!file) { alert('Please choose an image to upload.'); return; }
-      const form = new FormData();
-      form.append('photo', file);
-      form.append('size', String(EDIT_TARGET_SIZE));
-      form.append('name', el('name').value.trim());
       try {
-        const res = await fetch('/upload-photo', { method: 'POST', body: form });
-        const data = await res.json();
-        if (!res.ok) { throw new Error(data?.error || 'Upload failed'); }
-        el('photoUrl').value = data.url;
+        const bitmap = await createImageBitmap(file);
+        const out = await applyCircleStyle(bitmap);
+        bitmap.close();
+        const dataUrl = out.toDataURL('image/png');
+        el('photoUrl').value = dataUrl;
         render();
-        alert(`Photo uploaded successfully. URL: ${data.url}`);
+        alert('Photo processed successfully.');
       } catch (e) {
         alert('Upload error: ' + (e.message || e));
       }
@@ -448,37 +469,19 @@ If you have received this email in error, please notify me immediately and then 
     el('editReset').addEventListener('click', () => cropperInstance && cropperInstance.reset());
     el('editCancel').addEventListener('click', () => closeEditor());
 
-    // Save edited image: crop to selected size then upload to server
+    // Save edited image: apply circle style client-side and set as data URL
     el('editSave').addEventListener('click', async () => {
       try {
         if (!cropperInstance) return;
         const size = EDIT_TARGET_SIZE;
         const canvas = cropperInstance.getCroppedCanvas({ width: size, height: size });
         if (!canvas) throw new Error('Failed to render canvas');
-
-        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
-        if (!blob) throw new Error('Failed to create image blob');
-
-        const formData = new FormData();
-        formData.append('photo', blob, 'edited.png');
-        formData.append('size', String(size));
-        formData.append('name', el('name').value.trim());
-
-        const resp = await fetch('/upload-photo', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!resp.ok) {
-          const errText = await resp.text();
-          throw new Error(errText || 'Upload failed');
-        }
-
-        const data = await resp.json();
-        el('photoUrl').value = data.url;
+        const out = await applyCircleStyle(canvas);
+        const dataUrl = out.toDataURL('image/png');
+        el('photoUrl').value = dataUrl;
         render();
         closeEditor();
-        alert(`Edited image saved. URL: ${data.url}`);
+        alert('Edited image saved.');
       } catch (e) {
         alert('Save failed: ' + (e?.message || e));
       }
