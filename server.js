@@ -16,7 +16,10 @@ if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
 
-app.use(express.static(__dirname));
+const buildPath = path.join(__dirname, 'build');
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+}
 app.use('/images', express.static(imagesDir));
 
 // Multer memory storage for processing via Sharp
@@ -87,8 +90,11 @@ app.post('/upload-photo', (req, res) => {
   });
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'signature-builder.html'));
+app.get('*', (req, res) => {
+  if (fs.existsSync(path.join(buildPath, 'index.html'))) {
+    return res.sendFile(path.join(buildPath, 'index.html'));
+  }
+  return res.sendFile(path.join(__dirname, 'public', 'signature-builder.html'));
 });
 
 app.listen(PORT, () => {

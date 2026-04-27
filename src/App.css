@@ -1,0 +1,55 @@
+.app { min-height: 100vh; padding: 24px; background: #f7f8fb; }
+
+.wrap { display: grid; grid-template-columns: 60% 40%; gap: 20px; align-items: start; max-width: 1280px; margin: 0 auto; }
+
+.panel { background: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06); }
+
+.form { padding: 18px; }
+
+.field { margin-bottom: 16px; }
+
+.field label { display: block; font-size: 12px; color: #444; margin-bottom: 6px; }
+
+.field input[type='text'],
+.field input[type='url'],
+.field textarea { width: 100%; padding: 10px 12px; border: 1px solid #d7dbe2; border-radius: 10px; font-size: 14px; background: #fff; }
+
+.field textarea { min-height: 100px; resize: vertical; }
+
+.row { display: flex; gap: 12px; }
+
+.buttons { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+button { background: #0a84ff; color: #fff; border: none; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+
+button.secondary { background: #eef2f7; color: #111; }
+
+button:hover { filter: brightness(0.98); }
+
+.hint { font-size: 12px; color: #666; }
+
+.preview-pad { padding: 18px; }
+
+.preview-title { font-size: 16px; margin: 0 0 8px; }
+
+.preview { background: #fff; border: 1px solid #e3e6ec; border-radius: 10px; padding: 18px; min-height: 540px; }
+
+.sig-wrap { max-width: 720px; }
+
+.card { border: 1px solid #e5eaf3; border-radius: 12px; overflow: hidden; margin-bottom: 16px; background: #fff; }
+
+.card-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #f4f7fc; border-bottom: 1px solid #e5eaf3; }
+
+.card-title { margin: 0; font-size: 15px; font-weight: 700; color: #1f2937; }
+
+.card-body { padding: 14px; }
+
+.divider { height: 1px; background: #e9edf3; border: 0; margin: 12px 0; }
+
+.file-trigger { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: #eef2f7; color: #111; cursor: pointer; }
+
+.file-trigger input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+@media (max-width: 1024px) {
+  .wrap { grid-template-columns: 1fr; }
+}
