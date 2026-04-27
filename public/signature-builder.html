@@ -111,9 +111,13 @@ Gujarat, India"></textarea>
               <input id="phone" type="text" placeholder="(+91) 97-26265550" />
             </div>
             <div class="field" style="flex:1">
-              <label for="website">Website</label>
-              <input id="website" type="url" value="https://www.e2msolutions.com/" readonly />
+              <label for="skype">Skype</label>
+              <input id="skype" type="text" placeholder="ajay.e2m" />
             </div>
+          </div>
+          <div class="field">
+            <label for="website">Website</label>
+            <input id="website" type="url" value="https://www.e2msolutions.com/" readonly />
           </div>
         </div>
       </div>
@@ -214,63 +218,64 @@ If you have received this email in error, please notify me immediately and then 
       const copyright = (useCopyrightPlaceholder ? el('copyright').placeholder : el('copyright').value.trim());
       const disclaimer = (useDisclaimerPlaceholder ? el('disclaimer').placeholder : el('disclaimer').value.trim());
 
+      const skype = el('skype').value.trim();
       const photoUrl = el('photoUrl').value.trim();
       const size = DEFAULT_PHOTO_SIZE;
-      const photoImg = photoUrl ? `<img style="display:block;height:${size}px;width:${size}px;margin:auto;" src="${photoUrl}" width="${size}" height="${size}" alt="Profile" />` : '';
-      const logoImg = `<img style="display:block;height:40px;width:auto;margin:0;margin-bottom:20px" src="${LOGO_URL}" alt="Company Logo" />`;
+      const photoImg = photoUrl ? `<img style="display:block;height:${size}px;width:${size}px;margin:auto;" src="${photoUrl}" width="${size}" height="${size}">` : '';
+      const logoImg = `<img style="display:block;height:40px;width:93px;margin:0;margin-bottom:20px" src="${LOGO_URL}" width="93" height="40">`;
 
       const displayName = name ? name.toUpperCase() : '';
+      const addressHtml = address ? address.replace(/\n/g, '<br>\n') : '';
+      const footerParts = [];
+      if (disclaimer) footerParts.push(disclaimer.replace(/\n/g, '<br>\n'));
+      if (copyright) footerParts.push(copyright);
+      const footerText = footerParts.join('<br>\n');
 
       // Build email-safe (table + inline styles) signature HTML
-      return `
-<table style="float:none;max-width:580px;min-width:580px;padding:12px 20px;font-family:Calibri, Arial;" width="580" cellspacing="0" cellpadding="0">
-  <tbody>
-    <tr>
-      <td style="border-bottom:1px solid #d4d4d4;padding-bottom:15px;">
-        <table style="max-width:540px;min-width:540px;" cellspacing="0" cellpadding="0">
-          <tbody>
-            <tr>
-              <td style="padding-right:20px;border-right:1px solid #d4d4d4;text-align:center;" width="230" valign="middle">
-                <table style="font-size:14px;color:#000;margin-bottom:0;font-family:Calibri, Arial;min-width:230px;" cellspacing="0" cellpadding="0">
-                  <tbody>
-                    <tr>
+      return `<table style="float: none;" width="100%" cellspacing="0" cellpadding="0" align="left">
+  <tbody><tr>
+    <td>
+      <table style="max-width:580px;min-width:580px;padding:12px 20px;" width="580" cellspacing="0" cellpadding="0">
+        <tbody><tr>
+          <td style="border-bottom:1px solid #d4d4d4;padding-bottom:15px;">
+            <table style="max-width:540px;min-width:540px;" cellspacing="0" cellpadding="0">
+              <tbody><tr>
+                <td style="padding-right:20px;border-right:1px solid #d4d4d4;text-align: center;" width="230" valign="middle">
+                  <table style="font-size:14px;color:#000;margin-bottom:0;font-family:'Calibri',Arial;min-width: 230px;" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
                       <td>${photoImg}</td>
                     </tr>
                     <tr>
                       <td style="padding-top:10px;text-align:center;">
-                        ${displayName ? `<h2 style="font-size:20px;line-height:26px;font-weight:900;margin:0;font-family:Calibri, Arial;">${displayName}</h2>` : ''}
-                        ${designation ? `<p style="font-size:14px;color:#4e8db4;margin-top:5px;font-weight:900;margin-bottom:10px;font-family:Calibri, Arial;">${designation}</p>` : ''}
+                        ${displayName ? `<h2 style="font-size:20px;font-family:'Calibri',Arial;line-height:26px;font-weight:900;margin:0">${displayName}</h2>` : ''}
+                        ${designation ? `<p style="font-size:14px;color:#4e8db4;margin-top:5px;font-family:'Calibri',Arial;font-weight:900;margin-bottom:10px;">${designation.replace(/\n/g,'<br>')}</p>` : ''}
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              </td>
-              <td style="padding-left:20px;" width="350" align="left">
-                ${logoImg}
-                ${address ? `<p style="font-size:14px;color:#000;margin-top:6px;margin-bottom:10px;font-family:Calibri, Arial;white-space:pre-line;">${address}</p>` : ''}
-                ${phone ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:Calibri, Arial;">Phone: ${phone}</p>` : ''}
-                ${website ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:Calibri, Arial;">Web: <a style="text-decoration:none;color:#4e8db4;" href="${website}">${website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a></p>` : ''}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:15px 0px">
-        <table cellspacing="0" cellpadding="0" style="width:100%">
-          <tbody>
-            <tr>
-              <td style="padding-top:12px;">
-                ${calendar ? `<p style="font-size:14px;line-height:20px;color:#000;margin:0 0 8px;text-align:center;font-family:Calibri, Arial;"><strong>Schedule a meeting :</strong> <a style="text-decoration:none;color:#4e8db4;" href="${calendar}">${calendar}</a></p>` : ''}
-                ${disclaimer ? `<p style="font-size:12px;line-height:18px;color:#5b5b5b;margin:0;text-align:center;font-family:Calibri, Arial;">${disclaimer.replace(/\n/g,'<br>')}</p>` : ''}
-                ${copyright ? `<p style="font-size:12px;line-height:18px;color:#5b5b5b;margin:6px 0 0;text-align:center;font-family:Calibri, Arial;">${copyright}</p>` : ''}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
+                    </tbody></table>
+                </td>
+                <td style="padding-left:20px;" width="350" align="left">
+                  ${logoImg}
+                  ${addressHtml ? `<p style="font-size:14px;color:#000;margin-top:6px;font-family:'Calibri',Arial;margin-bottom:10px;">${addressHtml}</p>` : ''}
+                  ${phone ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:'Calibri',Arial;">Phone: ${phone}</p>` : ''}
+                  ${skype ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:'Calibri',Arial;">Skype: <a style="text-decoration:none;color:#4e8db4;" href="skype:${skype}?chat">${skype}</a></p>` : ''}
+                  ${website ? `<p style="font-size:14px;color:#000;margin-top:2px;margin-bottom:0;font-family:'Calibri',Arial;">Web: <a style="text-decoration:none;color:#4e8db4;" href="${website}">${website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a></p>` : ''}
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:15px 0px">
+            <table cellspacing="0" cellpadding="0" style="width:100%">
+              <tbody>
+                ${calendar ? `<tr><td><p style="font-size:14px;color:#000;margin-top:0px;margin-bottom:0;font-family:'Calibri',Arial;text-align: center;">Book an Appointment  - <a style="color:#4e8db4; font-weight: 600;" href="${calendar}">${calendar}</a></p></td></tr>` : ''}
+                ${footerText ? `<tr><td style="padding-top:12px;"><p style="font-size:12px;line-height:18px;color:#5b5b5b;margin:0;font-family:'Calibri',Arial;text-align:center;">${footerText}</p></td></tr>` : ''}
+              </tbody>
+            </table>
+          </td>
+        </tr></tbody></table>
+    </td>
+  </tr>
   </tbody>
 </table>`;
     }
@@ -282,7 +287,7 @@ If you have received this email in error, please notify me immediately and then 
     // Wire inputs
     el('name').addEventListener('input', () => { el('name').value = el('name').value.toUpperCase(); render(); });
     el('photoUrl').addEventListener('input', () => { el('photoUrl').value = el('photoUrl').value.toLowerCase(); render(); });
-    ['designation','address','phone','website','calendar','copyright','disclaimer']
+    ['designation','address','phone','skype','website','calendar','copyright','disclaimer']
       .forEach(id => el(id).addEventListener('input', render));
 
     ['useAddressPlaceholder','useCopyrightPlaceholder','useDisclaimerPlaceholder']
@@ -366,6 +371,7 @@ If you have received this email in error, please notify me immediately and then 
       el('designation').value = 'Lead Frontend Developer';
       el('address').value = 'A Block, 1401-1406, and 1413,\nNavratna Corporate Park Iscon,\nBopal Rd, Ambli,\nAhmedabad 380058,\nGujarat, India';
       el('phone').value = '(+91) 97-26265550';
+      el('skype').value = 'ankur.e2m';
       el('website').value = 'https://www.e2msolutions.com/';
       el('calendar').value = 'https://cal.com/ankur';
       el('photoUrl').value = '/images/profile.jpg';
